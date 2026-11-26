@@ -3,10 +3,10 @@ import React, { useEffect, useState } from "react";
 import {
   LayoutDashboard, Camera, Car, AlertTriangle, Gauge,
   Activity, Bell, FileText, Settings, Menu, ShieldCheck,
-  Wifi, WifiOff, RefreshCw, Radio, Construction,
-  ChevronRight
+  RefreshCw, Radio, Construction, ChevronRight
 } from "lucide-react";
 import CameraManagement from "./CameraManagement";
+import RoadObstruction from "./RoadObstruction";
 import "./App.css";
 
 const API_URL = "http://127.0.0.1:5000/api";
@@ -28,12 +28,16 @@ function App() {
   const [active, setActive] = useState("Overview");
   const [mobileMenu, setMobileMenu] = useState(false);
   const [cameras, setCameras] = useState([]);
+
   const [stats, setStats] = useState({
     total_cameras: 0,
+    total_obstructions: 0,
     active_obstructions: 0,
+    critical_obstructions: 0,
     total_detections: 0,
     unread_alerts: 0
   });
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [lastUpdated, setLastUpdated] = useState(null);
@@ -56,13 +60,16 @@ function App() {
 
       setStats({
         total_cameras: Number(statsData.total_cameras ?? 0),
+        total_obstructions: Number(statsData.total_obstructions ?? 0),
         active_obstructions: Number(statsData.active_obstructions ?? 0),
+        critical_obstructions: Number(statsData.critical_obstructions ?? 0),
         total_detections: Number(statsData.total_detections ?? 0),
         unread_alerts: Number(statsData.unread_alerts ?? 0)
       });
 
       setCameras(camerasData.cameras || []);
       setLastUpdated(new Date());
+
     } catch (err) {
       setError(err.message || "Unable to connect to the server.");
     } finally {
@@ -92,10 +99,22 @@ function App() {
       icon: Camera
     },
     {
+      title: "Obstructions Defined",
+      value: stats.total_obstructions,
+      description: "Total recorded road obstructions",
+      icon: Construction
+    },
+    {
       title: "Active Obstructions",
       value: stats.active_obstructions,
       description: "Currently reported obstructions",
-      icon: Construction
+      icon: AlertTriangle
+    },
+    {
+      title: "Critical Obstructions",
+      value: stats.critical_obstructions,
+      description: "Critical active obstructions",
+      icon: AlertTriangle
     },
     {
       title: "Total Detections",
@@ -272,8 +291,9 @@ function App() {
           </div>
 
           {renderEmpty(
-            "No obstruction information",
-            "Obstruction records will appear when detection data is connected."
+            "Obstructions Defined: " + stats.total_obstructions,
+            "Active: " + stats.active_obstructions +
+            " | Critical: " + stats.critical_obstructions
           )}
         </div>
 
@@ -292,8 +312,8 @@ function App() {
           </div>
 
           {renderEmpty(
-            "No alert information",
-            "Emergency alerts will appear when alert data is available."
+            "Unread Alerts: " + stats.unread_alerts,
+            "Emergency alert records will appear here."
           )}
         </div>
       </div>
@@ -305,8 +325,6 @@ function App() {
     const Icon = module?.icon || Activity;
 
     const descriptions = {
-      "Road Obstruction":
-        "Monitor road closures, construction, water flow and bridge overflow.",
       "Accident Detection":
         "Review accident detection events and incident locations.",
       "Vehicle Detection":
@@ -426,8 +444,13 @@ function App() {
             <CameraManagement />
           )}
 
+          {active === "Road Obstruction" && (
+            <RoadObstruction />
+          )}
+
           {active !== "Overview" &&
             active !== "CCTV Monitoring" &&
+            active !== "Road Obstruction" &&
             renderModule()}
 
           <footer className="footer">
