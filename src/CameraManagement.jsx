@@ -1,13 +1,20 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  Plus, Search, Pencil, Trash2, Camera, X, RefreshCw,
-  Wifi, WifiOff, MapPin
+  Plus,
+  Search,
+  Pencil,
+  Trash2,
+  Camera,
+  X,
+  RefreshCw,
+  Wifi,
+  WifiOff,
+  MapPin
 } from "lucide-react";
 import "./CameraManagement.css";
 
 const API_URL = "http://127.0.0.1:5000/api";
-const MOBILE_CAMERA_STREAM = "http://10.143.46.46:8080/video";
 
 const emptyForm = {
   camera_name: "",
@@ -28,7 +35,6 @@ export default function CameraManagement() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [streamError, setStreamError] = useState(false);
 
   const fetchCameras = async () => {
     setLoading(true);
@@ -182,61 +188,6 @@ export default function CameraManagement() {
             Add Camera
           </button>
         </div>
-      </div>
-
-      <div style={{
-        background: "#ffffff",
-        padding: "20px",
-        borderRadius: "12px",
-        marginBottom: "20px",
-        border: "1px solid #e2e8f0"
-      }}>
-        <div style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: "12px",
-          flexWrap: "wrap",
-          marginBottom: "15px"
-        }}>
-          <div>
-            <h3 style={{ margin: 0 }}>Live Mobile Camera</h3>
-            <p style={{ margin: "5px 0 0", color: "#64748b" }}>
-              Mobile IP Webcam Live Feed
-            </p>
-          </div>
-
-          <span style={{
-            color: streamError ? "#dc2626" : "#16a34a",
-            fontWeight: 600,
-            fontSize: "13px"
-          }}>
-            {streamError ? "Stream Unavailable" : "Live Stream"}
-          </span>
-        </div>
-
-        <img
-          src={MOBILE_CAMERA_STREAM}
-          alt="Mobile Camera Live Feed"
-          onLoad={() => setStreamError(false)}
-          onError={() => setStreamError(true)}
-          style={{
-            display: "block",
-            width: "100%",
-            maxHeight: "450px",
-            minHeight: "220px",
-            objectFit: "contain",
-            background: "#0f172a",
-            borderRadius: "8px"
-          }}
-        />
-
-        {streamError && (
-          <p style={{ color: "#dc2626", marginBottom: 0 }}>
-            Unable to connect. Check that IP Webcam is running and both
-            devices are connected to the same Wi-Fi network.
-          </p>
-        )}
       </div>
 
       <div className="cm-stats">
