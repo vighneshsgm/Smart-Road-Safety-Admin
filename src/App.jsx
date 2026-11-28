@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import CameraManagement from "./CameraManagement";
 import RoadObstruction from "./RoadObstruction";
+import SettingsPage from "./Settings";
 import "./App.css";
 
 const API_URL = "http://127.0.0.1:5000/api";
@@ -84,12 +85,6 @@ function App() {
 
     return () => clearInterval(interval);
   }, []);
-
-  const onlineCameras = cameras.filter(
-    (camera) => camera.status?.toLowerCase() === "online"
-  ).length;
-
-  const offlineCameras = cameras.length - onlineCameras;
 
   const statCards = [
     {
@@ -336,9 +331,7 @@ function App() {
       "Emergency Alerts":
         "Review and manage emergency notifications.",
       "Reports":
-        "Access road safety reports and system summaries.",
-      "Settings":
-        "Manage system configuration and administration."
+        "Access road safety reports and system summaries."
     };
 
     return (
@@ -448,9 +441,14 @@ function App() {
             <RoadObstruction />
           )}
 
+          {active === "Settings" && (
+            <SettingsPage />
+          )}
+
           {active !== "Overview" &&
             active !== "CCTV Monitoring" &&
             active !== "Road Obstruction" &&
+            active !== "Settings" &&
             renderModule()}
 
           <footer className="footer">
